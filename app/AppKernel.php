@@ -19,6 +19,7 @@ class AppKernel extends Kernel
             new \Gos\Bundle\WebSocketBundle\GosWebSocketBundle(),
             new \Gos\Bundle\PubSubRouterBundle\GosPubSubRouterBundle(),
             new \Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
+            new \JMS\SerializerBundle\JMSSerializerBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {

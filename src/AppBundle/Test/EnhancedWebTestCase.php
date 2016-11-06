@@ -12,6 +12,8 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class EnhancedWebTestCase extends WebTestCase
 {
+    private $asserter;
+
     protected function createAuthorizedClient($email, $password)
     {
         $client = static::createClient(array(), array(
@@ -21,5 +23,15 @@ class EnhancedWebTestCase extends WebTestCase
 
         $client->getContainer()->get('session')->set('logged', true);
         return $client;
+    }
+
+    // singleton
+    protected function asserter()
+    {
+        if($this->asserter == null)
+        {
+            $this->asserter = new ResponseAsserter();
+        }
+        return $this->asserter;
     }
 }
