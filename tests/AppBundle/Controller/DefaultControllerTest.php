@@ -2,17 +2,18 @@
 
 namespace Tests\AppBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use AppBundle\Test\EnhancedWebTestCase;
 
-class DefaultControllerTest extends WebTestCase
+class DefaultControllerTest extends EnhancedWebTestCase
 {
+
     public function testIndex()
     {
         $client = static::createClient();
 
-        $crawler = $client->request('GET', '/');
-
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertContains('Welcome to Symfony', $crawler->filter('#container h1')->text());
+        $client->request('GET', '/api/hello');
+        $response = $client->getResponse();
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertArrayHasKey('key', json_decode($response->getContent(), true));
     }
 }
