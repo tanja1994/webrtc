@@ -3,7 +3,7 @@ webrtc api backend.
 
 >> REST Api is partly inspired by http://knpuniversity.com/tracks/rest
 
->> Framework used for API: Symfony 3.x
+>> Framework used for API: Symfony 3.x (http://symfony.com/)
 
 >> Current developers:
 Patrick (novacp), Markus, Hadi.
