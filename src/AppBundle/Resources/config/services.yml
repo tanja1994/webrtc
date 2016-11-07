@@ -3,3 +3,9 @@ services:
         class: AppBundle\Topic\SignalingTopic
         tags:
             - { name: gos_web_socket.topic }
+
+    api_exception_subscriber:
+        class: AppBundle\EventListener\ApiExceptionSubscriber
+        arguments: []
+        tags:
+            - { name: kernel.event_subscriber }
