@@ -2,19 +2,23 @@
 
 namespace AppBundle\Controller;
 
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * @Security("is_granted('ROLE_USER')")
+ */
 class DefaultController extends Controller
 {
     /**
-     * @Route("/api/hello", name="homepage")
+     * @Route("/hello", name="homepage")
+     * @Method("POST")
      */
     public function indexAction(Request $request)
     {
         $data = ['key' => 'value'];
-        return $this->createApiResponse($data);
+        return $this->createApiResponse($data, 201);
     }
 }

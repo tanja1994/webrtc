@@ -6,6 +6,13 @@ services:
 
     api_exception_subscriber:
         class: AppBundle\EventListener\ApiExceptionSubscriber
-        arguments: []
+        arguments: ['%kernel.debug%', '@api.response_factory', '@logger']
         tags:
             - { name: kernel.event_subscriber }
+
+    jwt_token_authenticator:
+        class: AppBundle\Security\JwtTokenAuthenticator
+        autowire: true
+
+    api.response_factory:
+        class: AppBundle\Api\ResponseFactory

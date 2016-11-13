@@ -4,7 +4,7 @@ namespace AppBundle\Api;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * A wrapper for holding data to be used for a application/problem+json response
+ * Code adapted from: http://knpuniversity.com/tracks/rest
  */
 class ApiProblem
 {
@@ -23,6 +23,7 @@ class ApiProblem
     private $title;
 
     private $extraData = array();
+
 
     public function __construct($statusCode, $type = null)
     {
@@ -46,6 +47,7 @@ class ApiProblem
         $this->type = $type;
         $this->title = $title;
     }
+
 
     public function toArray()
     {
