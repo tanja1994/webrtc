@@ -17,6 +17,7 @@ use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 /**
  * Helper class to assert different conditions on Guzzle responses
+ * Code adapted from: http://knpuniversity.com/tracks/rest
  */
 class ResponseAsserter extends \PHPUnit_Framework_Assert
 {

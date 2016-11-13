@@ -2,12 +2,15 @@ imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
     - { resource: services.yml }
+    - { resource: '../../src/AppBundle/Resources/config/services.yml' }
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
-    locale: en
+    # a hack - should be configurable under jms_serializer, but the property_naming.id
+    # doesn't seem to be taken into account at all.
     jms_serializer.camel_case_naming_strategy.class: JMS\Serializer\Naming\IdenticalPropertyNamingStrategy
+    locale: en
 
 framework:
     #esi:             ~
@@ -91,3 +94,9 @@ stof_doctrine_extensions:
       timestampable: true
       softdeleteable: true
       translatable: true
+
+lexik_jwt_authentication:
+    private_key_path: %kernel.root_dir%/../var/jwt/private.pem
+    public_key_path:  %kernel.root_dir%/../var/jwt/public.pem
+    pass_phrase:      %jwt_key_pass_phrase%
+    token_ttl:        3600
