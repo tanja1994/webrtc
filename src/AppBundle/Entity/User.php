@@ -9,7 +9,7 @@ use JMS\Serializer\Annotation as Serializer;
 
 /**
  * @ORM\Table(name="user")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\UserRepository")
+ * @ORM\Entity(repositoryClass="AppBundle\Entity\Repository\UserRepository")
  */
 class User implements UserInterface
 {
@@ -34,6 +34,7 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=64)
      */
     private $password;
+
 
 
     public function getId()
