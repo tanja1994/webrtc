@@ -28,7 +28,7 @@ class TokenController extends Controller
         if(!$isValid) throw new BadCredentialsException('Invalide Eingabe');
 
         $token = $this->get('lexik_jwt_authentication.encoder')
-            ->encode(['exp' => time() + 3600, 'username' => $user->getUsername()]);
+            ->encode(['exp' => time() + 86400, 'username' => $user->getUsername()]);
 
         return new JsonResponse(['token' => $token]);
     }
