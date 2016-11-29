@@ -32,6 +32,7 @@ class TokenControllerTest extends EnhancedWebTestCase
     {
         $this->createUser('test2');
 
+
         $client = $this->createAuthorizedClient('test2', 'falsepass');
         $client->request('POST', '/tokens');
         $response = $client->getResponse();
