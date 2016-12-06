@@ -4,6 +4,16 @@ services:
         tags:
             - { name: gos_web_socket.topic }
 
+    gos_web_socket_server.client_event.listener:
+        class: AppBundle\EventListener\WebsocketEventListener
+        arguments: ["@request_stack"]
+        tags:
+            - { name: kernel.event_listener, event: 'gos_web_socket.client_connected', method: onClientConnect }
+            - { name: kernel.event_listener, event: 'gos_web_socket.client_disconnected', method: onClientDisconnect }
+            - { name: kernel.event_listener, event: 'gos_web_socket.client_error', method: onClientError }
+            - { name: kernel.event_listener, event: 'gos_web_socket.server_launched', method: onServerStart }
+            - { name: kernel.event_listener, event: 'gos_web_socket.client_rejected', method: onClientRejected }
+
     api_exception_subscriber:
         class: AppBundle\EventListener\ApiExceptionSubscriber
         arguments: ['%kernel.debug%', '@api.response_factory', '@logger']

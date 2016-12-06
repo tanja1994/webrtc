@@ -72,12 +72,19 @@ class Controller extends BaseController
         throw new ApiProblemException($apiProblem);
     }
 
-    protected function createApiResponse($data, $statusCode = 200)
+    protected function createApiResponse($data, $statusCode = 200, $cookies = [])
     {
         $json = $this->serialize($data);
-        return new Response($json, $statusCode, array(
+
+        $response = new Response($json, $statusCode, array(
             'Content-Type' => 'application/json'
         ));
+
+        foreach($cookies as $cookie)
+        {
+            $response->headers->setCookie($cookie);
+        }
+        return $response;
     }
 
     // use @ExclusionPolicy within entity / model to control, what should get serialized:
