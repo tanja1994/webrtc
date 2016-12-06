@@ -25,9 +25,8 @@ class SignalingTopic implements TopicInterface, PushableTopicInterface
 
     private $clients;
 
-    function __construct(RequestStack $requestStack)
+    function __construct()
     {
-        $this->request = $requestStack->getCurrentRequest();
         $this->clients = new \SplObjectStorage;
     }
 
