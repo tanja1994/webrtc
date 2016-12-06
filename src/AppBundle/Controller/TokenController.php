@@ -5,6 +5,7 @@ namespace AppBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
@@ -28,8 +29,10 @@ class TokenController extends Controller
         if(!$isValid) throw new BadCredentialsException('Invalide Eingabe');
 
         $token = $this->get('lexik_jwt_authentication.encoder')
-            ->encode(['exp' => time() + 86400, 'username' => $user->getUsername()]);
+            ->encode(['exp' => time() + 86400, 'username' => $user->getUsername(), 'id' => $user->getId()]);
 
-        return new JsonResponse(['token' => $token]);
+        $cookie = new Cookie('__token', $token, time() + 3600 * 24 * 7, '/');
+
+        return $this->createApiResponse($user, 201, [$cookie]);
     }
 }

@@ -10,12 +10,26 @@ namespace AppBundle\Topic;
 
 use Gos\Bundle\WebSocketBundle\Topic\PushableTopicInterface;
 use Gos\Bundle\WebSocketBundle\Topic\TopicInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\TokenExtractor\AuthorizationHeaderTokenExtractor;
 use Ratchet\ConnectionInterface;
 use Ratchet\Wamp\Topic;
 use Gos\Bundle\WebSocketBundle\Router\WampRequest;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class SignalingTopic implements TopicInterface, PushableTopicInterface
 {
+
+    /** @var Request */
+    private $request;
+
+    private $clients;
+
+    function __construct(RequestStack $requestStack)
+    {
+        $this->request = $requestStack->getCurrentRequest();
+        $this->clients = new \SplObjectStorage;
+    }
 
 /**
  * This will receive any Subscription requests for this topic.
@@ -27,8 +41,30 @@ class SignalingTopic implements TopicInterface, PushableTopicInterface
  */
     public function onSubscribe(ConnectionInterface $connection, Topic $topic, WampRequest $request)
     {
+
+        $extractor = new AuthorizationHeaderTokenExtractor(
+            'Bearer',
+            'Authorization'
+        );
+
+        $token = $extractor->extract($this->request);
+
+        // Prüfen, ob user authentifiziert ist. Wenn nicht, Websocket schließen
+        if(!($token)) $topic->remove($connection);
+
+        $user =
+        $userid = $request->getAttributes()->get('user_id');
+
+        // Prüfen, ob anonym oder nicht sein eigener Channel
+        if($user->getId() != $userid)
+        {
+            $topic->remove($connection);
+            return false;
+        }
+        return true;
+
         //this will broadcast the message to ALL subscribers of this topic.
-        $topic->broadcast(['msg' => $connection->resourceId . " has joined " . $topic->getId()]);
+        //$topic->broadcast(['msg' => $connection->resourceId . " has joined " . $topic->getId()]);
     }
 
     /**
