@@ -43,11 +43,12 @@ class EnhancedWebTestCase extends WebTestCase
         return $this->asserter;
     }
 
-    protected function createUser($username, $plainPassword = 'Test1234')
+    protected function createUser($username, $plainPassword = 'Test1234', $role = User::ROLE_STUDENT)
     {
         $user = new User();
         $user->setUsername($username);
         $user->setEmail($username.'@test.com');
+        $user->addRole($role);
         $password = $this->getService('security.password_encoder')
             ->encodePassword($user, $plainPassword);
         $user->setPassword($password);
@@ -59,12 +60,17 @@ class EnhancedWebTestCase extends WebTestCase
         return $user;
     }
 
-    protected function getAuthorizedHeaders($username, $headers = array())
+    protected function getAuthorizedToken($username)
     {
         $token = $this->getService('lexik_jwt_authentication.encoder')
             ->encode(['username' => $username]);
-        $headers['HTTP_Authorization'] = 'Bearer '.$token;
-        return $headers;
+
+        return $token;
+    }
+
+    protected function getFalseToken()
+    {
+        return '123456FalseToken';
     }
 
     protected function getService($id)

@@ -14,9 +14,12 @@ use Gos\Bundle\WebSocketBundle\Event\ClientErrorEvent;
 use Gos\Bundle\WebSocketBundle\Event\ServerEvent;
 use Gos\Bundle\WebSocketBundle\Event\ClientRejectedEvent;
 use Guzzle\Http\Message\RequestInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
 use Lexik\Bundle\JWTAuthenticationBundle\TokenExtractor\AuthorizationHeaderTokenExtractor;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 
 class WebsocketEventListener
 {
@@ -26,10 +29,15 @@ class WebsocketEventListener
      */
     private $clientManipulator;
 
+    /**
+     * @var JWTEncoderInterface
+     */
+    private $encoder;
 
-    function __construct(ClientManipulator $clientManipulator)
+
+    function __construct(JWTEncoderInterface $encoder)
     {
-        $this->clientManipulator = $clientManipulator;
+        $this->encoder = $encoder;
     }
 
     /**
@@ -38,27 +46,15 @@ class WebsocketEventListener
      */
     public function onClientConnect(ClientEvent $event)
     {
-        $connection = $event->getConnection();
-        $user = $this->clientManipulator->getClient($connection);
+        $token = $event->getConnection()->WebSocket->request->getCookie('__token');
+        if(!$token) $event->getConnection()->close();
 
-        echo "ja";
-        var_dump($user);die;
-        /*$header = (string) $request->getHeader('Origin');
-        $origin = parse_url($header, PHP_URL_HOST) ?: $header;
-        die("ORIGIN: " . $origin);*/
-        //VARr_dump($event->getConnection()->WebSocket->request->getHeader('Authorization'));die;
-        /*$extractor = new AuthorizationHeaderTokenExtractor(
-            'Bearer',
-            'Authorization'
-        );
-
-        $token = $extractor->extract($this->request);
-
-        // Prüfen, ob user authentifiziert ist. Wenn nicht, Websocket schließen
-        if(!($token))
+        try{
+            $this->encoder->decode($token);
+        }catch(JWTDecodeFailureException $e)
         {
             $event->getConnection()->close();
-        }*/
+        }
     }
 
     /**
