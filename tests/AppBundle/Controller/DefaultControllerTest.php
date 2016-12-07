@@ -3,19 +3,28 @@
 namespace Tests\AppBundle\Controller;
 
 use AppBundle\Test\EnhancedWebTestCase;
+use Symfony\Component\BrowserKit\Cookie;
 
+/**
+ * @author Patrick Beckedorf
+ */
 class DefaultControllerTest extends EnhancedWebTestCase
 {
+
     public function testIndexSuccess()
     {
         $this->createUser('test3');
         $client = static::createClient();
 
-        $client->request('POST', '/hello', array(), array(), $this->getAuthorizedHeaders('test3'));
+        $token = $this->getAuthorizedToken('test3');
+        $cookie = new Cookie('__token', $token);
+        $client->getCookieJar()->set($cookie);
+
+        $client->request('POST', '/hello');
 
         $response = $client->getResponse();
         $this->assertEquals(201, $response->getStatusCode());
-        $this->asserter()->assertResponsePropertyEquals($response, 'key', 'value');
+        $this->asserter()->assertResponsePropertyEquals($response, 'key', 'hello');
     }
 
     public function testIndexMissingToken()
@@ -36,7 +45,11 @@ class DefaultControllerTest extends EnhancedWebTestCase
     {
         $client = static::createClient();
 
-        $client->request('POST', '/hello', array(), array(), array('HTTP_Authorization' => 'Bearer WRONG'));
+        $token = $this->getFalseToken();
+        $cookie = new Cookie('__token', $token);
+        $client->getCookieJar()->set($cookie);
+
+        $client->request('POST', '/hello');
 
         $response = $client->getResponse();
 

@@ -1,12 +1,13 @@
 services:
     signaling.topic_service:
         class: AppBundle\Topic\SignalingTopic
+        arguments: ["@lexik_jwt_authentication.encoder.default"]
         tags:
             - { name: gos_web_socket.topic }
 
     gos_web_socket_server.client_event.listener:
         class: AppBundle\EventListener\WebsocketEventListener
-        arguments: ["@request_stack"]
+        arguments: ["@lexik_jwt_authentication.encoder.default"]
         tags:
             - { name: kernel.event_listener, event: 'gos_web_socket.client_connected', method: onClientConnect }
             - { name: kernel.event_listener, event: 'gos_web_socket.client_disconnected', method: onClientDisconnect }

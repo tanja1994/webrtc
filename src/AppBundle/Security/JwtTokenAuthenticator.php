@@ -45,15 +45,13 @@ class JwtTokenAuthenticator extends AbstractGuardAuthenticator
             'Bearer',
             'Authorization'
         );
+        $token = $extractor->extract($request);*/
 
-        $token = $extractor->extract($request);
-*/
+        //var_dump($request->headers);die;
         $token = $request->cookies->get('__token');
-
         if (!$token) {
             return;
         }
-
         return $token;
     }
 

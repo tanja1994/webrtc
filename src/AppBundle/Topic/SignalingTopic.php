@@ -10,6 +10,8 @@ namespace AppBundle\Topic;
 
 use Gos\Bundle\WebSocketBundle\Topic\PushableTopicInterface;
 use Gos\Bundle\WebSocketBundle\Topic\TopicInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
 use Lexik\Bundle\JWTAuthenticationBundle\TokenExtractor\AuthorizationHeaderTokenExtractor;
 use Ratchet\ConnectionInterface;
 use Ratchet\Wamp\Topic;
@@ -25,8 +27,15 @@ class SignalingTopic implements TopicInterface, PushableTopicInterface
 
     private $clients;
 
-    function __construct()
+    /**
+     * @var JWTEncoderInterface
+     */
+    private $encoder;
+
+
+    function __construct(JWTEncoderInterface $encoder)
     {
+        $this->encoder = $encoder;
         $this->clients = new \SplObjectStorage;
     }
 
@@ -40,27 +49,24 @@ class SignalingTopic implements TopicInterface, PushableTopicInterface
  */
     public function onSubscribe(ConnectionInterface $connection, Topic $topic, WampRequest $request)
     {
+        $token = $connection->WebSocket->request->getCookie('__token');
 
-        $extractor = new AuthorizationHeaderTokenExtractor(
-            'Bearer',
-            'Authorization'
-        );
+        if(!$token) $connection->getConnection()->close();
 
-        $token = $extractor->extract($this->request);
-
-        // Prüfen, ob user authentifiziert ist. Wenn nicht, Websocket schließen
-        if(!($token)) $topic->remove($connection);
-
-        $user =
-        $userid = $request->getAttributes()->get('user_id');
+        try{
+            $decoded = $this->encoder->decode($token);
+        }catch(JWTDecodeFailureException $e)
+        {
+            $connection->close();
+        }
 
         // Prüfen, ob anonym oder nicht sein eigener Channel
-        if($user->getId() != $userid)
+       /* if($user->getId() != $userid)
         {
             $topic->remove($connection);
             return false;
         }
-        return true;
+        return true;*/
 
         //this will broadcast the message to ALL subscribers of this topic.
         //$topic->broadcast(['msg' => $connection->resourceId . " has joined " . $topic->getId()]);
