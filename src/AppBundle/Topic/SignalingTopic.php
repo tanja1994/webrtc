@@ -19,6 +19,9 @@ use Gos\Bundle\WebSocketBundle\Router\WampRequest;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
+/**
+ * @author Patrick Beckedorf
+ */
 class SignalingTopic implements TopicInterface, PushableTopicInterface
 {
 
@@ -36,7 +39,8 @@ class SignalingTopic implements TopicInterface, PushableTopicInterface
     function __construct(JWTEncoderInterface $encoder)
     {
         $this->encoder = $encoder;
-        $this->clients = new \SplObjectStorage;
+        // will be replaced by SplObjectStorage soon
+        $this->clients = array();
     }
 
 /**
@@ -50,7 +54,7 @@ class SignalingTopic implements TopicInterface, PushableTopicInterface
     public function onSubscribe(ConnectionInterface $connection, Topic $topic, WampRequest $request)
     {
         $token = $connection->WebSocket->request->getCookie('__token');
-
+        $decoded = [];
         if(!$token) $connection->getConnection()->close();
 
         try{
@@ -60,16 +64,15 @@ class SignalingTopic implements TopicInterface, PushableTopicInterface
             $connection->close();
         }
 
-        // Prüfen, ob anonym oder nicht sein eigener Channel
-       /* if($user->getId() != $userid)
+        $userid = $request->getAttributes()->get('user_id');
+        if(count($decoded) > 0 && isset($decoded['id']) && $decoded['id'] != $userid)
         {
             $topic->remove($connection);
             return false;
         }
-        return true;*/
 
-        //this will broadcast the message to ALL subscribers of this topic.
-        //$topic->broadcast(['msg' => $connection->resourceId . " has joined " . $topic->getId()]);
+        // add user to client store
+        $this->clients[$userid] = $connection;
     }
 
     /**
@@ -115,7 +118,7 @@ class SignalingTopic implements TopicInterface, PushableTopicInterface
      */
     public function onPush(Topic $topic, WampRequest $request, $data, $provider)
     {
-        $topic->broadcast($data);
+        $this->clients[$data['user']]->event($topic->getId(), json_encode($data['message']));
     }
 
 

@@ -12,6 +12,9 @@ use AppBundle\Entity\User;
 use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
+/**
+ * @author Patrick Beckedorf
+ */
 class EnhancedWebTestCase extends WebTestCase
 {
 

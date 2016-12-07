@@ -35,4 +35,6 @@ class TokenController extends Controller
 
         return $this->createApiResponse(['user' => $user], 201, [$cookie]);
     }
+
+
 }
