@@ -13,22 +13,14 @@ use Gos\Bundle\WebSocketBundle\Event\ClientEvent;
 use Gos\Bundle\WebSocketBundle\Event\ClientErrorEvent;
 use Gos\Bundle\WebSocketBundle\Event\ServerEvent;
 use Gos\Bundle\WebSocketBundle\Event\ClientRejectedEvent;
-use Guzzle\Http\Message\RequestInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
-use Lexik\Bundle\JWTAuthenticationBundle\TokenExtractor\AuthorizationHeaderTokenExtractor;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 
+/**
+ * @author Patrick Beckedorf
+ */
 class WebsocketEventListener
 {
-
-    /**
-     * @var ClientManipulator
-     */
-    private $clientManipulator;
-
     /**
      * @var JWTEncoderInterface
      */
@@ -50,7 +42,7 @@ class WebsocketEventListener
         if(!$token) $event->getConnection()->close();
 
         try{
-            $this->encoder->decode($token);
+            $decoded = $this->encoder->decode($token);
         }catch(JWTDecodeFailureException $e)
         {
             $event->getConnection()->close();
