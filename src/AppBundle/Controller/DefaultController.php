@@ -12,7 +12,6 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class DefaultController extends Controller
 {
-
     /**
      * @Route("/hello", name="homepage")
      * @Method("POST")

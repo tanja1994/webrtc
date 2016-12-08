@@ -28,19 +28,16 @@ class SignalingTopic implements TopicInterface, PushableTopicInterface
     /** @var Request */
     private $request;
 
-    private $clients;
-
     /**
      * @var JWTEncoderInterface
      */
     private $encoder;
 
+    private $clients = [];
 
     function __construct(JWTEncoderInterface $encoder)
     {
         $this->encoder = $encoder;
-        // will be replaced by SplObjectStorage soon
-        $this->clients = array();
     }
 
 /**
@@ -71,8 +68,9 @@ class SignalingTopic implements TopicInterface, PushableTopicInterface
             return false;
         }
 
-        // add user to client store
-        $this->clients[$userid] = $connection;
+        // add user to topic store manually
+        $this->clients['user' . $userid] = $connection;
+        $topic->broadcast(['msg' => $connection->resourceId . " has joined " . $topic->getId()]);
     }
 
     /**
@@ -118,7 +116,8 @@ class SignalingTopic implements TopicInterface, PushableTopicInterface
      */
     public function onPush(Topic $topic, WampRequest $request, $data, $provider)
     {
-        $this->clients[$data['user']]->event($topic->getId(), json_encode($data['message']));
+        $this->clients['user' . $data['user']]->event($topic->getId(), json_encode($data['message']));
+        //$topic->broadcast(json_encode($data['message']));
     }
 
 

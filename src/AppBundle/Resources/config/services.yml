@@ -1,5 +1,5 @@
 services:
-    signaling.topic_service:
+    app.topic_signaling:
         class: AppBundle\Topic\SignalingTopic
         arguments: ["@lexik_jwt_authentication.encoder.default"]
         tags:
