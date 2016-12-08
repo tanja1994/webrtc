@@ -23,12 +23,22 @@ class SecurityController extends Controller
         $em = $this->get('doctrine.orm.entity_manager');
         $userRepo = $em->getRepository('AppBundle:User');
 
+        // Parameter ob channel key
+        $key = $request->request->get('key');
+        if($key != 'certificate_request' && $key != 'certificate_response')
+        {
+            return $this->createApiResponse(['error' => 'Invalid key']);
+        }
+
         // username of user that should get called
         $receiverEmail = $request->request->get('receiver');
         $receiver = $em->getRepository('AppBundle:User')
             ->findOneBy(['username' => $receiverEmail]);
 
-        if(!$receiver) return;
+        if(!$receiver) {
+            return $this->createApiResponse(['error' => 'Invalid receiver']);
+        }
+
         $receiverId = $receiver->getId();
 
         // Userid of current logged user
@@ -42,8 +52,9 @@ class SecurityController extends Controller
         // Push to receiver channel
         $pusher = $this->get('gos_web_socket.zmq.pusher');
         $pusher->push([
-            'user' =>  $receiverId,
-            'message' => ['sender' => $senderId, 'certificate' => $certificate]
+            'user'      =>  $receiverId,
+            'key'       => $key,
+            'message'   => ['sender' => $senderId, 'certificate' => $certificate]
         ], 'signaling_topic', [ 'user_id' => $receiverId ]);
 
         return $this->createApiResponse(['sent']);
