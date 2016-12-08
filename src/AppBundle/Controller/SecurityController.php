@@ -20,11 +20,13 @@ class SecurityController extends Controller
      */
     public function certificateAction(Request $request)
     {
+        $this->get('logger')->debug('STARTED');
         $em = $this->get('doctrine.orm.entity_manager');
         $userRepo = $em->getRepository('AppBundle:User');
 
         // Parameter ob channel key
         $key = $request->request->get('key');
+        $this->get('logger')->debug('KEY: ' . $key);
         if($key != 'certificate_request' && $key != 'certificate_response')
         {
             return $this->createApiResponse(['error' => 'Invalid key']);
@@ -53,8 +55,7 @@ class SecurityController extends Controller
         $pusher = $this->get('gos_web_socket.zmq.pusher');
         $pusher->push([
             'user'      =>  $receiverId,
-            'key'       => $key,
-            'message'   => ['sender' => $senderId, 'certificate' => $certificate]
+            'message'   => ['key' => $key, 'sender' => $senderId, 'certificate' => $certificate]
         ], 'signaling_topic', [ 'user_id' => $receiverId ]);
 
         return $this->createApiResponse(['sent']);
