@@ -1,15 +1,49 @@
 <?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
+
+use JMS\Serializer\Annotation as Serializer;
+
 /**
- * Created by PhpStorm.
- * User: Sina
- * Date: 07.12.2016
- * Time: 12:10
+ * @ORM\Table(name="studycourse")
+ * @ORM\Entity(repositoryClass="AppBundle\Entity\Repository\UserRepository")
  */
-
-namespace AppBundle\Entity\Repository;
-
-
 class Studycourse
 {
+    /**
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
+     */
+    private $id;
+
+    /**
+     * @ORM\Column(type="string", unique=true)
+     */
+    private $studycourseName;
+
+
+    /**
+     * @ORM\ManyToMany(targetEntity="User", inversedBy="studycourse")
+     * many studycourses belong to many users
+     */
+    private $user;
+
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function getStudycourseName()
+    {
+        return $this->studycourseName;
+    }
+    public function setStudycourseName($studycourseName)
+    {
+        $this->studycourseName = $studycourseName;
+    }
 
 }
