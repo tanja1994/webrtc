@@ -9,7 +9,7 @@ use JMS\Serializer\Annotation as Serializer;
 
 /**
  * @ORM\Table(name="meeting")
- * @ORM\Entity(repositoryClass="AppBundle\Entity\Repository\UserRepository")
+ * @ORM\Entity(repositoryClass="AppBundle\Entity\Repository\MeetingRepository")
  */
 class Meeting
 {
@@ -42,6 +42,12 @@ class Meeting
      * @ORM\Column(type="datetime")
      */
     private $meetingEndDate;
+
+    public function __construct()
+    {
+        $this->slots = array();
+    }
+
 
     public function getId()
     {

@@ -9,10 +9,15 @@ use JMS\Serializer\Annotation as Serializer;
 
 /**
  * @ORM\Table(name="slot")
- * @ORM\Entity(repositoryClass="AppBundle\Entity\Repository\UserRepository")
+ * @ORM\Entity(repositoryClass="AppBundle\Entity\Repository\SlotRepository")
  */
 class Slot
 {
+    const SLOTSTATUS_ACCEPTED = 'ACCEPTED';
+    const SLOTSTATUS_DECLINED = 'DECLINED';
+    const SLOTSTATUS_REQUESTED = 'REQUESTED';
+
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -23,7 +28,7 @@ class Slot
     /**
      * @ORM\Column(type="string")
      */
-    private $slotname;
+    private $slotName;
 
     /**
      * @ORM\ManyToOne(targetEntity="Meeting", inversedBy="slot")
@@ -50,20 +55,33 @@ class Slot
     /**
      * @ORM\Column(type="string")
      */
-    private $slotStatus =array("requested", "accepted", "declined");
+    private $slotComment;
+
+    /**
+     * @ORM\Column(type="string")
+     */
+    private $slotStatus;
+
+    public function __construct()
+    {
+        $this->slotStatus = array();
+    }
+
+
+
 
     public function getId()
     {
         return $this->id;
     }
 
-    public function getSlotname()
+    public function getSlotName()
     {
-        return $this->slotname;
+        return $this->slotName;
     }
-    public function setSlotname($slotname)
+    public function setSlotName($slotName)
     {
-        $this->username = $slotname;
+        $this->slotName = $slotName;
     }
 
 
@@ -87,6 +105,13 @@ class Slot
 
     public function getSlotStatus()
     {
+        $slotStatus = $this->slotStatus;
+
+        //Before the professor has accepted the slot, the slot has the status requested
+        $slotStatus[] = static::SLOTSTATUS_REQUESTED;
+
+        return array_unique($slotStatus);
+
         return $this->slotStatus;
     }
     public function setSlotStatus($slotStatus)

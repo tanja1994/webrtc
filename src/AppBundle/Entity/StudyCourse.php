@@ -32,6 +32,12 @@ class Studycourse
      */
     private $user;
 
+    public function __construct()
+    {
+        $this->user = array();
+    }
+
+
     public function getId()
     {
         return $this->id;

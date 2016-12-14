@@ -13,6 +13,10 @@ use JMS\Serializer\Annotation as Serializer;
  */
 class User implements UserInterface
 {
+    const ROLE_DEFAULT = 'ROLE_USER';
+    const ROLE_STUDENT = 'ROLE_STUDENT';
+    const ROLE_PROF = 'ROLE_PROF';
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -59,19 +63,48 @@ class User implements UserInterface
     private $studycourse;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="array")
+     * @Serializer\Expose
      */
-    private $userRole =array("Student", "Professor");
+    private $roles;
 
     /**
      * @ORM\Column(type="string")
      */
-    private $lecture;
+    private $lectures;
 
     /**
      * @ORM\Column(type="string")
      */
     private $title;
+
+    public function __construct()
+    {
+        $this->lectures = array();
+        $this->userRole = array();
+        $this->studycourse = array ();
+    }
+
+    public function getRoles()
+    {
+        $roles = $this->roles;
+        // we need to make sure to have at least one role
+        $roles[] = static::ROLE_DEFAULT;
+        return array_unique($roles);
+    }
+
+
+    public function addRole($role)
+    {
+        $role = strtoupper($role);
+        if ($role === static::ROLE_DEFAULT) {
+            return $this;
+        }
+        if (!in_array($role, $this->roles, true)) {
+            $this->roles[] = $role;
+        }
+        return $this;
+    }
 
     public function getId()
     {
@@ -138,10 +171,6 @@ class User implements UserInterface
     public function setTitle($title)
     {
         $this->title = $title;
-    }
-    public function getRoles()
-    {
-        return ['ROLE_USER'];
     }
 
     public function getSalt()
