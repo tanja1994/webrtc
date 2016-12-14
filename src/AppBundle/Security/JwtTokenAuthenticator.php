@@ -19,6 +19,9 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
 
+/**
+ * @author Patrick Beckedorf
+ */
 class JwtTokenAuthenticator extends AbstractGuardAuthenticator
 {
     /** @var JWTEncoderInterface */
@@ -41,17 +44,17 @@ class JwtTokenAuthenticator extends AbstractGuardAuthenticator
 
     public function getCredentials(Request $request)
     {
-        $extractor = new AuthorizationHeaderTokenExtractor(
+        /*$extractor = new AuthorizationHeaderTokenExtractor(
             'Bearer',
             'Authorization'
         );
+        $token = $extractor->extract($request);*/
 
-        $token = $extractor->extract($request);
-
+        //var_dump($request->headers);die;
+        $token = $request->cookies->get('__token');
         if (!$token) {
             return;
         }
-
         return $token;
     }
 

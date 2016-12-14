@@ -9,5 +9,4 @@ use AppBundle\Entity\Slot;
 class SlotRepository extends EntityRepository
 {
 
-
 }

@@ -1,4 +1,7 @@
 signaling_topic:
-  channel: signaling/
+  channel: signaling/{user_id}
   handler:
     callback: 'signaling.topic' #related to the getName() or your topic
+  requirements:
+    user_id:
+      pattern: ""

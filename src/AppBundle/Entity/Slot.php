@@ -3,96 +3,139 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\UserInterface;
-
 use JMS\Serializer\Annotation as Serializer;
 
 /**
  * @ORM\Table(name="slot")
- * @ORM\Entity(repositoryClass="AppBundle\Entity\Repository\UserRepository")
+ * @ORM\Entity
+ * @Serializer\ExclusionPolicy("all")
  */
+
 class Slot
 {
-    /**
+      /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Serializer\Expose
      */
     private $id;
 
     /**
      * @ORM\Column(type="string")
+     * @Serializer\Expose
      */
-    private $slotname;
+    private $name;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Meeting", inversedBy="slot")
+     * @ORM\Column(type="integer")
+     * @Serializer\Expose
+     */
+    private $time;
+
+    /**
+     * @ORM\Column(type="datetime")
+     * @Serializer\Expose
+     */
+    private $dte;
+
+    /**
+     * @ORM\Column(type="string")
+     * @Serializer\Expose
+     */
+    private $comment;
+
+    /**
+     * @ORM\Column(type="string")
+     * @Serializer\Expose
+     */
+    private $status;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Meeting", inversedBy="slots")
      * many slots belong to one meeting
      */
     private $meeting;
 
     /**
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="slot")
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="slots")
      * many slots belong to one student
      */
-    private $user;
+    private $student;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $slotTime;
-
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private $slotDate;
-
-    /**
-     * @ORM\Column(type="string")
-     */
-    private $slotStatus =array("requested", "accepted", "declined");
 
     public function getId()
     {
         return $this->id;
     }
 
-    public function getSlotname()
+    public function getName()
     {
-        return $this->slotname;
-    }
-    public function setSlotname($slotname)
-    {
-        $this->username = $slotname;
+        return $this->name;
     }
 
-
-    public function getSlotTime()
+    public function setName($name)
     {
-        return $this->slotTime;
-    }
-    public function setSlotTime($slotTime)
-    {
-        $this->slotTime = $slotTime;
+        $this->name = $name;
     }
 
-    public function getSlotDate()
+    public function getTime()
     {
-        return $this->slotDate;
-    }
-    public function setSlotDate($slotDate)
-    {
-        $this->slotDate = $slotDate;
+        return $this->time;
     }
 
-    public function getSlotStatus()
+    public function setTime($time)
     {
-        return $this->slotStatus;
-    }
-    public function setSlotStatus($slotStatus)
-    {
-        $this->slotStatus = $slotStatus;
+        $this->time = $time;
     }
 
+    public function getDte()
+    {
+        return $this->dte;
+    }
 
+    public function setDte($dte)
+    {
+        $this->dte = $dte;
+    }
+
+    public function getComment()
+    {
+        return $this->comment;
+    }
+
+    public function setComment($comment)
+    {
+        $this->comment = $comment;
+    }
+
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    public function setStatus($status)
+    {
+        $this->status = $status;
+    }
+
+    public function getMeeting()
+    {
+        return $this->meeting;
+    }
+
+    public function setMeeting($meeting)
+    {
+        $this->meeting = $meeting;
+    }
+
+    public function getStudent()
+    {
+        return $this->student;
+    }
+
+    public function setStudent($student)
+    {
+        $this->student = $student;
+    }
 }

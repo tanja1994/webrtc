@@ -8,7 +8,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * @Security("is_granted('ROLE_USER')")
+ * @Security("has_role('ROLE_USER')")
  */
 class DefaultController extends Controller
 {
@@ -18,7 +18,7 @@ class DefaultController extends Controller
      */
     public function indexAction(Request $request)
     {
-        $data = ['key' => 'value'];
+        $data = ['key' => 'hello'];
         return $this->createApiResponse($data, 201);
     }
 }
