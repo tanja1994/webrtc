@@ -47,10 +47,10 @@ class User implements UserInterface
     private $password;
 
     /**
-     * @ORM\OneToMany(targetEntity="Slot", mappedBy="user")
+     * @ORM\OneToMany(targetEntity="Slot", mappedBy="student")
      * one student belong to many slots
      */
-    private $slot;
+    private $slots;
     /**
      * @ORM\Column(type="array")
      * @Serializer\Expose
@@ -73,7 +73,7 @@ class User implements UserInterface
     }
 
     /**
-     * @ORM\OneToMany(targetEntity="Meeting", mappedBy="user")
+     * @ORM\OneToMany(targetEntity="Meeting", mappedBy="professor")
      * one professor belong to many meetings
      */
     private $meeting;

@@ -25,13 +25,13 @@ class Meeting
      * @ORM\OneToMany(targetEntity="Slot", mappedBy="meeting")
      * one meeting belong to many slots
      */
-    private $slot;
+    private $slots;
 
     /**
      * @ORM\ManyToOne(targetEntity="User", inversedBy="meeting")
      * Many meetings belong to one professor
      */
-    private $user;
+    private $professor;
 
     /**
      * @ORM\Column(type="datetime")
