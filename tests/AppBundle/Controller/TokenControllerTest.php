@@ -10,6 +10,7 @@ namespace Tests\AppBundle\Controller;
 
 
 use AppBundle\Test\EnhancedWebTestCase;
+use Symfony\Component\BrowserKit\Cookie;
 
 class TokenControllerTest extends EnhancedWebTestCase
 {
@@ -40,5 +41,24 @@ class TokenControllerTest extends EnhancedWebTestCase
 
         $this->assertEquals(401, $response->getStatusCode());
         $this->asserter()->assertResponsePropertyEquals($response, 'detail', 'Invalid credentials.');
+    }
+
+    public function testLogout()
+    {
+        $this->createUser('testLogout');
+        $client = static::createClient();
+
+        $token = $this->getAuthorizedToken('testLogout');
+        $cookie = new Cookie('__token', $token);
+        $client->getCookieJar()->set($cookie);
+
+        $client->request('POST', '/hello');
+        $request = $client->getRequest();
+        $this->assertTrue($request->cookies->has('__token'));
+
+        $client->request('DELETE', '/tokens');
+        $client->request('POST', '/hello');
+        $request = $client->getRequest();
+        $this->assertFalse($request->cookies->has('__token'));
     }
 }
