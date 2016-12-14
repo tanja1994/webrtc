@@ -4,12 +4,12 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
-
 use JMS\Serializer\Annotation as Serializer;
 
 /**
  * @ORM\Table(name="user")
  * @ORM\Entity(repositoryClass="AppBundle\Entity\Repository\UserRepository")
+ * @Serializer\ExclusionPolicy("all")
  */
 class User implements UserInterface
 {
@@ -21,6 +21,7 @@ class User implements UserInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Serializer\Expose
      */
     private $id;
 
@@ -36,6 +37,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", unique=true)
+     * @Serializer\Expose
      */
     private $email;
 
@@ -49,6 +51,26 @@ class User implements UserInterface
      * one student belong to many slots
      */
     private $slot;
+    /**
+     * @ORM\Column(type="array")
+     * @Serializer\Expose
+     */
+    private $roles;
+
+    private $studyCourses;
+
+    private $title;
+
+
+    /**
+     * User constructor.
+     */
+    public function __construct()
+    {
+        $this->roles = array();
+        $this->lectures = array();
+        $this->studycourse = array ();
+    }
 
     /**
      * @ORM\OneToMany(targetEntity="Meeting", mappedBy="user")
@@ -63,27 +85,9 @@ class User implements UserInterface
     private $studycourse;
 
     /**
-     * @ORM\Column(type="array")
-     * @Serializer\Expose
-     */
-    private $roles;
-
-    /**
      * @ORM\Column(type="string")
      */
     private $lectures;
-
-    /**
-     * @ORM\Column(type="string")
-     */
-    private $title;
-
-    public function __construct()
-    {
-        $this->lectures = array();
-        $this->userRole = array();
-        $this->studycourse = array ();
-    }
 
     public function getRoles()
     {
@@ -146,22 +150,19 @@ class User implements UserInterface
         $this->password = $password;
     }
 
-    public function getUserRole()
+
+    public function setUserRole($role)
     {
-        return $this->userRole;
-    }
-    public function setUserRole($userRole)
-    {
-        $this->userRole = $userRole;
+        $this->roles = $role;
     }
 
     public function getLecture()
     {
-        return $this->lecture;
+        return $this->lectures;
     }
-    public function setLecture($lecture)
+    public function setLecture($lectures)
     {
-        $this->lecture = $lecture;
+        $this->lectures = $lectures;
     }
 
     public function getTitle()
@@ -170,8 +171,10 @@ class User implements UserInterface
     }
     public function setTitle($title)
     {
+
         $this->title = $title;
     }
+
 
     public function getSalt()
     {
@@ -181,4 +184,5 @@ class User implements UserInterface
     public function eraseCredentials()
     {
     }
+
 }
