@@ -5,6 +5,7 @@ namespace AppBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -34,5 +35,20 @@ class TokenController extends Controller
         $cookie = new Cookie('__token', $token, time() + 3600 * 24 * 7, '/', '.chor-am-killesberg.de');
 
         return $this->createApiResponse(['user' => $user], 201, [$cookie]);
+    }
+
+    /**
+     * @Route("/tokens")
+     * @Method("DELETE")
+     * @Security("has_role('ROLE_USER')")
+     */
+    public function deleteTokenAction(Request $request)
+    {
+        if($request->cookies->has('__token'))
+        {
+            $response = $this->createApiResponse(['logout' => true]);
+            $response->headers->clearCookie('_a');
+            return $response;
+        }
     }
 }

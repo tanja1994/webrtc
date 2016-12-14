@@ -2,6 +2,7 @@
 
 namespace Tests\AppBundle\Controller;
 
+use AppBundle\Entity\User;
 use AppBundle\Test\EnhancedWebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
 
@@ -13,7 +14,7 @@ class DefaultControllerTest extends EnhancedWebTestCase
 
     public function testIndexSuccess()
     {
-        $this->createUser('test3');
+        $this->createUser('test3', 'Test1234', User::ROLE_PROF);
         $client = static::createClient();
 
         $token = $this->getAuthorizedToken('test3');
