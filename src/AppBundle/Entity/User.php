@@ -26,10 +26,14 @@ class User implements UserInterface
     private $id;
 
     /**
-     * @ORM\Column(type="string", unique=true)
-     * @Serializer\Expose
+     * @ORM\Column(type="string")
      */
     private $username;
+
+    /**
+     * @ORM\Column(type="string")
+     */
+    private $usersurname;
 
     /**
      * @ORM\Column(type="string", unique=true)
@@ -43,14 +47,15 @@ class User implements UserInterface
     private $password;
 
     /**
+     * @ORM\OneToMany(targetEntity="Slot", mappedBy="student")
+     * one student belong to many slots
+     */
+    private $slots;
+    /**
      * @ORM\Column(type="array")
      * @Serializer\Expose
      */
     private $roles;
-
-    private $firstname;
-
-    private $lastname;
 
     private $studyCourses;
 
@@ -63,9 +68,47 @@ class User implements UserInterface
     public function __construct()
     {
         $this->roles = array();
+        $this->lectures = array();
+        $this->studycourse = array ();
+    }
+
+    /**
+     * @ORM\OneToMany(targetEntity="Meeting", mappedBy="professor")
+     * one professor belong to many meetings
+     */
+    private $meeting;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="Studycourse", mappedBy="user")
+     * many user belong to many study courses
+     */
+    private $studycourse;
+
+    /**
+     * @ORM\Column(type="string")
+     */
+    private $lectures;
+
+    public function getRoles()
+    {
+        $roles = $this->roles;
+        // we need to make sure to have at least one role
+        $roles[] = static::ROLE_DEFAULT;
+        return array_unique($roles);
     }
 
 
+    public function addRole($role)
+    {
+        $role = strtoupper($role);
+        if ($role === static::ROLE_DEFAULT) {
+            return $this;
+        }
+        if (!in_array($role, $this->roles, true)) {
+            $this->roles[] = $role;
+        }
+        return $this;
+    }
 
     public function getId()
     {
@@ -79,6 +122,14 @@ class User implements UserInterface
     public function setUsername($username)
     {
         $this->username = $username;
+    }
+    public function getUserSurname()
+    {
+        return $this->userSurname;
+    }
+    public function setUserSurname($userSurname)
+    {
+        $this->userSurname = $userSurname;
     }
 
     public function getEmail()
@@ -99,15 +150,31 @@ class User implements UserInterface
         $this->password = $password;
     }
 
-    public function getRoles()
+
+    public function setUserRole($role)
     {
-        $roles = $this->roles;
-
-        // we need to make sure to have at least one role
-        $roles[] = static::ROLE_DEFAULT;
-
-        return array_unique($roles);
+        $this->roles = $role;
     }
+
+    public function getLecture()
+    {
+        return $this->lectures;
+    }
+    public function setLecture($lectures)
+    {
+        $this->lectures = $lectures;
+    }
+
+    public function getTitle()
+    {
+        return $this->title;
+    }
+    public function setTitle($title)
+    {
+
+        $this->title = $title;
+    }
+
 
     public function getSalt()
     {
@@ -118,20 +185,4 @@ class User implements UserInterface
     {
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function addRole($role)
-    {
-        $role = strtoupper($role);
-        if ($role === static::ROLE_DEFAULT) {
-            return $this;
-        }
-
-        if (!in_array($role, $this->roles, true)) {
-            $this->roles[] = $role;
-        }
-
-        return $this;
-    }
 }
