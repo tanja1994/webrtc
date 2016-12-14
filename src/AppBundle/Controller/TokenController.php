@@ -32,7 +32,8 @@ class TokenController extends Controller
         $token = $this->get('lexik_jwt_authentication.encoder')
             ->encode(['exp' => time() + 86400, 'username' => $user->getUsername(), 'id' => $user->getId()]);
 
-        $cookie = new Cookie('__token', $token, time() + 3600 * 24 * 7, '/', '.chor-am-killesberg.de');
+       // $cookie = new Cookie('__token', $token, time() + 3600 * 24 * 7, '/', '.chor-am-killesberg.de');
+        $cookie = new Cookie('__token', $token, time() + 3600 * 24 * 7, '/');
 
         return $this->createApiResponse(['user' => $user], 201, [$cookie]);
     }
@@ -47,8 +48,9 @@ class TokenController extends Controller
         if($request->cookies->has('__token'))
         {
             $response = $this->createApiResponse(['logout' => true]);
-            $response->headers->clearCookie('_a');
+            $response->headers->clearCookie('__token', '/', null, false, true);
             return $response;
         }
+        return $this->createApiResponse(['logout' => false]);
     }
 }
