@@ -33,9 +33,9 @@ class SecurityController extends Controller
         }
 
         // username of user that should get called
-        $receiverEmail = $request->request->get('receiver');
+        $receiverId = $request->request->get('receiver');
         $receiver = $em->getRepository('AppBundle:User')
-            ->findOneBy(['username' => $receiverEmail]);
+            ->find($receiverId);
 
         if(!$receiver) {
             return $this->createApiResponse(['error' => 'Invalid receiver']);

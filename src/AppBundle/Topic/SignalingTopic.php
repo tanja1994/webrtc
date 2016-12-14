@@ -116,7 +116,7 @@ class SignalingTopic implements TopicInterface, PushableTopicInterface
      */
     public function onPush(Topic $topic, WampRequest $request, $data, $provider)
     {
-        $this->clients['user' . $data['user']]->event($topic->getId(), json_encode($data['message']));
+        $this->clients['user' . $data['user']]->event($topic->getId(), stripslashes(json_encode($data['message'])));
         //$topic->broadcast(json_encode($data['message']));
     }
 

@@ -8,7 +8,6 @@
 
 namespace AppBundle\EventListener;
 
-use Gos\Bundle\WebSocketBundle\Client\ClientManipulator;
 use Gos\Bundle\WebSocketBundle\Event\ClientEvent;
 use Gos\Bundle\WebSocketBundle\Event\ClientErrorEvent;
 use Gos\Bundle\WebSocketBundle\Event\ServerEvent;
