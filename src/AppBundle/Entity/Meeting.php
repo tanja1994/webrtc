@@ -2,14 +2,14 @@
 
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\UserInterface;
-
 use JMS\Serializer\Annotation as Serializer;
 
 /**
  * @ORM\Table(name="meeting")
- * @ORM\Entity(repositoryClass="AppBundle\Entity\Repository\MeetingRepository")
+ * @ORM\Entity
+ * @Serializer\ExclusionPolicy("all")
  */
 class Meeting
 {
@@ -17,9 +17,21 @@ class Meeting
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Serializer\Expose
      */
     private $id;
 
+    /**
+     * @ORM\Column(type="datetime")
+     * @Serializer\Expose
+     */
+    private $startDate;
+
+    /**
+     * @ORM\Column(type="datetime")
+     * @Serializer\Expose
+     */
+    private $endDate;
 
     /**
      * @ORM\OneToMany(targetEntity="Slot", mappedBy="meeting")
@@ -28,24 +40,15 @@ class Meeting
     private $slots;
 
     /**
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="meeting")
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="meetings")
      * Many meetings belong to one professor
      */
     private $professor;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private $meetingStartDate;
-
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private $meetingEndDate;
 
     public function __construct()
     {
-        $this->slots = array();
+        $this->slots = new ArrayCollection();
     }
 
 
@@ -54,25 +57,54 @@ class Meeting
         return $this->id;
     }
 
-
-    public function getMeetingStartDate()
+    public function getStartDate()
     {
-        return $this->meetingStartDate;
+        return $this->startDate;
     }
 
-    public function setMeetingStartDate($meetingStartDate)
+    public function setStartDate($startDate)
     {
-        $this->meetingStartDate = $meetingStartDate;
+        $this->startDate = $startDate;
     }
 
-    public function getMeetingEndDate()
+    public function getEndDate()
     {
-        return $this->meetingEndDate;
+        return $this->endDate;
     }
 
-    public function setMeetingEndDate($meetingEndDate)
+    public function setEndDate($endDate)
     {
-        $this->meetingEndDate = $meetingEndDate;
+        $this->endDate = $endDate;
     }
 
+    public function getSlots()
+    {
+        return $this->slots;
+    }
+
+    public function addSlot(Slot $slot)
+    {
+        if(!$this->slots->contains($slot))
+        {
+            $this->slots->add($slot);
+        }
+    }
+
+    public function removeSlot(Slot $slot)
+    {
+        if($this->slots->contains($slot))
+        {
+            $this->slots->remove($slot);
+        }
+    }
+
+    public function getProfessor()
+    {
+        return $this->professor;
+    }
+
+    public function setProfessor($professor)
+    {
+        $this->professor = $professor;
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use JMS\Serializer\Annotation as Serializer;
@@ -26,68 +27,67 @@ class User implements UserInterface
     private $id;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", unique=true)
+     * @Serializer\Expose
      */
     private $username;
 
     /**
      * @ORM\Column(type="string")
-     */
-    private $usersurname;
-
-    /**
-     * @ORM\Column(type="string", unique=true)
      * @Serializer\Expose
      */
-    private $email;
+    private $firstname;
 
     /**
-     * @ORM\Column(type="string", length=64)
+     * @ORM\Column(type="string")
+     * @Serializer\Expose
+     */
+    private $lastname;
+
+    /**
+     * @ORM\Column(type="string", length=255)
      */
     private $password;
 
-    /**
-     * @ORM\OneToMany(targetEntity="Slot", mappedBy="student")
-     * one student belong to many slots
-     */
-    private $slots;
     /**
      * @ORM\Column(type="array")
      * @Serializer\Expose
      */
     private $roles;
 
-    private $studyCourses;
-
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Serializer\Expose
+     */
     private $title;
 
-
     /**
-     * User constructor.
+     * @ORM\OneToMany(targetEntity="Slot", mappedBy="student")
+     * one student belong to many slots
      */
-    public function __construct()
-    {
-        $this->roles = array();
-        $this->lectures = array();
-        $this->studycourse = array ();
-    }
+    private $slots;
 
     /**
      * @ORM\OneToMany(targetEntity="Meeting", mappedBy="professor")
      * one professor belong to many meetings
      */
-    private $meeting;
+    private $meetings;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Studycourse", mappedBy="user")
+     * @ORM\ManyToMany(targetEntity="Studycourse", mappedBy="users")
      * many user belong to many study courses
      */
-    private $studycourse;
+    private $studycourses;
 
-    /**
-     * @ORM\Column(type="string")
-     */
-    private $lectures;
+
+    public function __construct()
+    {
+        $this->roles = array();
+        $this->slots = new ArrayCollection();
+        $this->meetings = new ArrayCollection();
+        $this->studycourses = new ArrayCollection();
+    }
+
 
     public function getRoles()
     {
@@ -119,26 +119,10 @@ class User implements UserInterface
     {
         return $this->username;
     }
+
     public function setUsername($username)
     {
         $this->username = $username;
-    }
-    public function getUserSurname()
-    {
-        return $this->userSurname;
-    }
-    public function setUserSurname($userSurname)
-    {
-        $this->userSurname = $userSurname;
-    }
-
-    public function getEmail()
-    {
-        return $this->email;
-    }
-    public function setEmail($email)
-    {
-        $this->email = $email;
     }
 
     public function getPassword()
@@ -148,21 +132,6 @@ class User implements UserInterface
     public function setPassword($password)
     {
         $this->password = $password;
-    }
-
-
-    public function setUserRole($role)
-    {
-        $this->roles = $role;
-    }
-
-    public function getLecture()
-    {
-        return $this->lectures;
-    }
-    public function setLecture($lectures)
-    {
-        $this->lectures = $lectures;
     }
 
     public function getTitle()
@@ -185,4 +154,86 @@ class User implements UserInterface
     {
     }
 
+    public function getFirstname()
+    {
+        return $this->firstname;
+    }
+
+    public function setFirstname($firstname)
+    {
+        $this->firstname = $firstname;
+    }
+
+    public function getLastname()
+    {
+        return $this->lastname;
+    }
+
+    public function setLastname($lastname)
+    {
+        $this->lastname = $lastname;
+    }
+
+    public function getSlots()
+    {
+        return $this->slots;
+    }
+
+    public function addSlot(Slot $slot)
+    {
+        if(!$this->slots->contains($slot))
+        {
+            $this->slots->add($slot);
+        }
+    }
+
+    public function removeSlot(Slot $slot)
+    {
+        if($this->slots->contains($slot))
+        {
+            $this->slots->remove($slot);
+        }
+    }
+
+    public function getMeetings()
+    {
+        return $this->meetings;
+    }
+
+    public function addMeeting(Meeting $meeting)
+    {
+        if(!$this->meetings->contains($meeting))
+        {
+            $this->meetings->add($meeting);
+        }
+    }
+
+    public function removeMeeting(Meeting $meeting)
+    {
+        if($this->meetings->contains($meeting))
+        {
+            $this->meetings->remove($meeting);
+        }
+    }
+
+    public function getStudycourses()
+    {
+        return $this->studycourses;
+    }
+
+    public function addStudyCourse(Studycourse $studycourse)
+    {
+        if(!$this->studycourses->contains($studycourse))
+        {
+            $this->studycourses->add($studycourse);
+        }
+    }
+
+    public function removeStudyCourse(Studycourse $studycourse)
+    {
+        if($this->studycourses->contains($studycourse))
+        {
+            $this->studycourses->remove($studycourse);
+        }
+    }
 }

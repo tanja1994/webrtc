@@ -2,14 +2,15 @@
 
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 use JMS\Serializer\Annotation as Serializer;
 
 /**
  * @ORM\Table(name="studycourse")
- * @ORM\Entity(repositoryClass="AppBundle\Entity\Repository\UserRepository")
+ * @ORM\Entity
+ * @Serializer\ExclusionPolicy("all")
  */
 class Studycourse
 {
@@ -17,24 +18,26 @@ class Studycourse
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Serializer\Expose
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", unique=true)
+     * @Serializer\Expose
      */
-    private $studycourseName;
-
+    private $name;
 
     /**
-     * @ORM\ManyToMany(targetEntity="User", inversedBy="studycourse")
+     * @ORM\ManyToMany(targetEntity="User", inversedBy="studycourses")
      * many studycourses belong to many users
      */
-    private $user;
+    private $users;
+
 
     public function __construct()
     {
-        $this->user = array();
+        $this->users = new ArrayCollection();
     }
 
 
@@ -43,13 +46,34 @@ class Studycourse
         return $this->id;
     }
 
-    public function getStudycourseName()
+    public function getName()
     {
-        return $this->studycourseName;
-    }
-    public function setStudycourseName($studycourseName)
-    {
-        $this->studycourseName = $studycourseName;
+        return $this->name;
     }
 
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+    public function getUsers()
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user)
+    {
+        if(!$this->users->contains($user))
+        {
+            $this->users->add($user);
+        }
+    }
+
+    public function removeUser(User $user)
+    {
+        if($this->users->contains($user))
+        {
+            $this->users->remove($user);
+        }
+    }
 }
